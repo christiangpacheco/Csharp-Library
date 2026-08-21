@@ -1,0 +1,9 @@
+@model List<Library.Models.Book>
+<h1>Livros</h1>
+
+@foreach (var book in Model)
+{
+    <p>
+        @book.Title - @book.Author
+    </p>
+}
