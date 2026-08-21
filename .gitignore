@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio and VS Code local files
+.vs/
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local development databases and logs
+*.db
+*.db-shm
+*.db-wal
+*.log
+
+# Local environment and secret files
+.env
+.env.*
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
