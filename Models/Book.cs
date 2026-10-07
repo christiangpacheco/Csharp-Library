@@ -10,7 +10,11 @@ public class Book
 
     public string ISBN { get; set; } = string.Empty;
 
-    public DateTime PublishedAt { get; set; }
+    public DateOnly PublishedAt { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public ICollection<BookCopy> Copies { get; set; } = new List<BookCopy>();
 }

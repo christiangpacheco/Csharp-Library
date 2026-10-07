@@ -15,7 +15,7 @@ public class BooksController : Controller
                 Title = "Clean Code",
                 Author = "Robert C. Martin",
                 ISBN = "9780132350884",
-                PublishedAt = new DateTime(2008, 8, 1)
+                PublishedAt = new DateOnly(2008, 8, 1)
             }
         };
 
