@@ -12,13 +12,13 @@ Estado de partida (commit da Leva 0): models `User`, `Book`, `BookCopy` e `Loan`
 - [x] PostgreSQL em Docker + User Secrets
 - [x] Commit
 
-## Leva 1 — Esqueleto do site
+## Leva 1 — Esqueleto do site ✅
 Objetivo: abrir `/` sem erro e ter um layout comum.
-- [ ] `Views/_ViewStart.cshtml`, `Views/_ViewImports.cshtml`, `Views/Shared/_Layout.cshtml` (Bootstrap via CDN, menu Livros / Empréstimos / Entrar)
-- [ ] `HomeController` com a action `Error` e a view `Views/Shared/Error.cshtml`, que o `Program.cs` já referencia
-- [ ] Corrigir `BooksController`: `return View(books)` em vez de `/Views/Account/Books/...`
-- [ ] `docker-compose.yml` com o PostgreSQL (porta 5433, volume `library-data`)
-- [ ] Atualizar o README (4 tabelas, porta 5433, Docker)
+- [x] `Views/_ViewStart.cshtml`, `Views/_ViewImports.cshtml`, `Views/Shared/_Layout.cshtml` (Bootstrap via CDN, menu Livros / Empréstimos / Entrar)
+- [x] `HomeController` com a action `Error` e a view `Views/Shared/Error.cshtml`, que o `Program.cs` já referencia
+- [x] Corrigir `BooksController`: `return View(books)` em vez de `/Views/Account/Books/...`
+- [x] `docker-compose.yml` com o PostgreSQL (porta 5433, volume `library-data`)
+- [x] Atualizar o README (4 tabelas, porta 5433, Docker)
 
 **Pronto quando:** `dotnet run` abre a lista de livros com o layout.
 

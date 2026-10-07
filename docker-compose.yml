@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    container_name: library-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no arquivo .env}
+    ports:
+      - "5433:5432"
+    volumes:
+      - library-data:/var/lib/postgresql/data
+
+volumes:
+  library-data:

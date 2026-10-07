@@ -5,9 +5,9 @@ Aplicacao web para gerenciamento de livros, desenvolvida com ASP.NET Core MVC, .
 ## Requisitos
 
 - SDK do .NET 10
-- PostgreSQL instalado e executando localmente
-- Banco PostgreSQL chamado `library`
-- Usuario PostgreSQL com permissao no banco
+- Docker (para o PostgreSQL 17) ou um PostgreSQL instalado localmente
+- Banco PostgreSQL chamado `library` na porta `5433`
+- Usuario PostgreSQL `admin` com permissao no banco
 
 Verifique o SDK instalado:
 
@@ -16,6 +16,28 @@ dotnet --version
 ```
 
 ## Configuracao do banco local
+
+### Subir o PostgreSQL com Docker
+
+O `docker-compose.yml` na raiz sobe o PostgreSQL 17 no container `library-db`, na porta `5433`, com os dados no volume `library-data`. A senha nao fica no arquivo: ela vem da variavel `POSTGRES_PASSWORD`.
+
+```bash
+cp .env.example .env   # edite o .env e defina POSTGRES_PASSWORD
+docker compose up -d
+```
+
+O arquivo `.env` esta no `.gitignore` e nao deve ser commitado. Use a mesma senha nos User Secrets (abaixo).
+
+Se preferir sem compose, o equivalente com `docker run` e:
+
+```bash
+docker run -d --name library-db -e POSTGRES_DB=library -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=SUA_SENHA -p 5433:5432 -v library-data:/var/lib/postgresql/data postgres:17
+```
+
+Se ja existe um container `library-db` criado com `docker run`, nao rode o `docker compose up` ao mesmo tempo: os dois usam o mesmo nome e a mesma porta.
+
+### Sem Docker
 
 Crie o banco `library` no PostgreSQL. Neste projeto, a conexao local usada pelos User Secrets e:
 
@@ -78,25 +100,15 @@ dotnet tool update --global dotnet-ef --version 10.0.11
 
 1. Configure o PostgreSQL local.
 2. Configure os User Secrets.
-3. Gere a migration:
-
-```bash
-dotnet ef migrations add InitialCreate
-```
-
-4. Aplique a migration no banco:
+3. Aplique as migrations no banco:
 
 ```bash
 dotnet ef database update
 ```
 
-A migration inicial cria a tabela `Books` e a tabela interna `__EFMigrationsHistory`.
+A migration `InitialCreate` ja existe neste projeto e cria as tabelas `Users`, `Books`, `BookCopies` e `Loans`, alem da tabela interna `__EFMigrationsHistory`. Nao execute `dotnet ef migrations add InitialCreate` novamente.
 
-A migration `InitialCreate` ja foi criada neste projeto. Portanto, nao execute `dotnet ef migrations add InitialCreate` novamente. Para aplicar uma migration que ja existe, use somente:
-
-```bash
-dotnet ef database update
-```
+Nunca edite os arquivos da pasta `Migrations/` a mao. Para mudar o banco, altere o model ou a configuration e gere uma migration nova.
 
 Quando o model mudar, crie uma nova migration com outro nome:
 
@@ -149,7 +161,7 @@ No navegador do DBeaver, atualize:
 Schemas > public > Tables
 ```
 
-A tabela criada pela migration se chama `Books`. Para consulta SQL, use aspas por causa do `B` maiusculo:
+As tabelas criadas pela migration sao `Users`, `Books`, `BookCopies` e `Loans`. Para consulta SQL, use aspas por causa das letras maiusculas:
 
 ```sql
 SELECT * FROM public."Books";

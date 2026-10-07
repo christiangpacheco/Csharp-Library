@@ -1,24 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
-using Library.Models;
+using Microsoft.EntityFrameworkCore;
+using Library.Data;
 
 namespace Library.Controllers;
 
 public class BooksController : Controller
 {
-    public IActionResult Index()
-    {
-        var books = new List<Book>
-        {
-            new Book
-            {
-                Id = 1,
-                Title = "Clean Code",
-                Author = "Robert C. Martin",
-                ISBN = "9780132350884",
-                PublishedAt = new DateOnly(2008, 8, 1)
-            }
-        };
+    private readonly LibraryDbContext _context;
 
-        return View("/Views/Account/Books/Index.cshtml", books);
+    public BooksController(LibraryDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var books = await _context.Books
+            .AsNoTracking()
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+
+        return View(books);
     }
 }
