@@ -15,6 +15,15 @@
 ## Decisão fora do plano
 - Criado `Properties/launchSettings.json` (perfis `http` em `http://localhost:5080` e `https` em `https://localhost:7080`, ambos `ASPNETCORE_ENVIRONMENT=Development`). Sem ele o `dotnet run` subia em Production, os User Secrets não eram carregados e toda página com banco dava 500 ("ConnectionString property has not been initialized").
 
+## Como rodar
+```bash
+export PATH="$PATH:$HOME/.dotnet/tools"
+docker start library-db            # ou: cp .env.example .env && docker compose up -d
+dotnet user-secrets list           # conferir ConnectionStrings:DefaultConnection (porta 5433)
+dotnet ef database update
+dotnet run                         # http://localhost:5080
+```
+
 ## Validação
 - `dotnet build`: sem erros e sem avisos.
 - `dotnet run --launch-profile http` + `curl`: `/` → 200, `/Books` → 200 (layout + "Nenhum livro cadastrado ainda."), `/Home/Error` → 200.
