@@ -89,3 +89,4 @@ Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
 - Nunca editar `Migrations/` à mão: mudar model/configuration e rodar `dotnet ef migrations add NomeDaMudanca`.
 - Controllers finos: regra de negócio fica nos services.
 - Cada leva termina com `dotnet build` limpo e um commit `leva N: descrição`.
+- Ao concluir uma leva, criar o relatório `docs/levas/leva-N.md` (o que foi feito, decisões, validação, pendências e ponto de partida da próxima) e atualizar `docs/levas/README.md`. Para retomar o trabalho, leia o `PLANO.md` e o relatório da última leva.
