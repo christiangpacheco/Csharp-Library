@@ -1,77 +1,89 @@
 # Plano de desenvolvimento em levas
 
-Cada leva é pequena o bastante para caber num commit (ou PR) e termina com o projeto compilando e rodando. Marque os itens conforme forem concluídos.
+Cada leva é um pedaço pequeno que compila, roda e termina com um commit. Só começamos a próxima quando a anterior estiver funcionando no navegador.
 
-## Estado atual
-
-- [x] Models: `User`, `Book`, `BookCopy`, `Loan`, enums `UserRole` e `BookCopyStatus`
-- [x] Configurations (constraints, índices, `DeleteBehavior.Restrict`) e `LibraryDbContext`
-- [x] Migration `20261007005456_InitialCreate` aplicada no PostgreSQL (container `library-db`, porta 5433)
-- [ ] Controllers, services, DTOs e views (arquivos existem, mas estão vazios)
-
-Critério de pronto para toda leva: `dotnet build` sem erros, `dotnet ef migrations has-pending-model-changes` sem mudanças e o fluxo da leva testado no navegador.
+Estado de partida (commit da Leva 0): models `User`, `Book`, `BookCopy` e `Loan`, configurations, `LibraryDbContext` e migration `InitialCreate` aplicada no PostgreSQL local (Docker, porta 5433). O resto da estrutura existe, mas está vazio.
 
 ---
 
-## Leva 1 — Base do MVC
+## Leva 0 — Base de dados ✅
+- [x] Models, enums e configurations
+- [x] Migration `InitialCreate` (Users, Books, BookCopies, Loans)
+- [x] PostgreSQL em Docker + User Secrets
+- [x] Commit
 
-Objetivo: a aplicação abre no navegador com layout e a listagem de livros vinda do banco.
+## Leva 1 — Esqueleto do site
+Objetivo: abrir `/` sem erro e ter um layout comum.
+- [ ] `Views/_ViewStart.cshtml`, `Views/_ViewImports.cshtml`, `Views/Shared/_Layout.cshtml` (Bootstrap via CDN, menu Livros / Empréstimos / Entrar)
+- [ ] `HomeController` com a action `Error` e a view `Views/Shared/Error.cshtml`, que o `Program.cs` já referencia
+- [ ] Corrigir `BooksController`: `return View(books)` em vez de `/Views/Account/Books/...`
+- [ ] Atualizar o README (4 tabelas, porta 5433, Docker)
 
-- [ ] `Views/_ViewStart.cshtml` e `Views/_ViewImports.cshtml` (`@using Library.Models`, `@using Library.DTOs.*`, tag helpers)
-- [ ] `Views/Shared/_Layout.cshtml` com menu (Livros, Empréstimos, Entrar/Sair)
-- [ ] `HomeController` + `Views/Home/Error.cshtml` (o `Program.cs` já aponta para `/Home/Error`)
-- [ ] Corrigir `BooksController.Index`: hoje retorna `/Views/Account/Books/Index.cshtml`, que não existe; usar `return View(books)`
-- [ ] `BooksController` lendo do `LibraryDbContext` em vez da lista fixa
+**Pronto quando:** `dotnet run` abre a lista de livros com o layout.
 
-## Leva 2 — Livros (CRUD)
+## Leva 2 — Catálogo de livros (CRUD)
+Objetivo: cadastrar e editar livros de verdade no banco.
+- [ ] DTOs `CreateBookDto` e `UpdateBookDto` (renomear `UpdateBook.cs`), com `[Required]`, `[StringLength]` e ISBN de 13 dígitos
+- [ ] `IBookService` / `BookService` usando `LibraryDbContext` (listar, detalhar, criar, editar, desativar)
+- [ ] Registrar no `Program.cs` com `AddScoped<IBookService, BookService>()`
+- [ ] `BooksController`: Index, Details, Create, Edit (GET/POST) com views
+- [ ] ISBN duplicado vira mensagem de validação, não erro 500
 
-Objetivo: cadastrar, editar, listar, ver detalhes e remover livros.
+**Pronto quando:** dá para cadastrar, editar e ver livros, e eles continuam lá depois de reiniciar a aplicação.
 
-- [ ] DTOs: `CreateBookDto`, `UpdateBookDto` (renomear `UpdateBook.cs`) com Data Annotations (`[Required]`, `[StringLength]`, ISBN com 13 dígitos)
-- [ ] `IBookService` / `BookService`: `ListAsync`, `GetByIdAsync`, `CreateAsync`, `UpdateAsync`, `DeleteAsync`
-- [ ] Tratar ISBN duplicado (índice único) com mensagem amigável no `ModelState`
-- [ ] Bloquear exclusão de livro com exemplares (FK `Restrict`) com mensagem amigável
-- [ ] Registrar o service no `Program.cs` (`AddScoped<IBookService, BookService>()`)
-- [ ] Views: `Index`, `Details`, `Create`, `Edit`, `Delete`
+## Leva 3 — Exemplares (BookCopies)
+Objetivo: cada livro mostra seus exemplares e quantos estão disponíveis.
+- [ ] Na página Details do livro: lista de exemplares (código e status) e formulário "Adicionar exemplar"
+- [ ] Mudar o status para `Lost` ou `Inactive` (nunca apagar)
+- [ ] Na Index: coluna "Disponíveis X de Y"
 
-## Leva 3 — Exemplares (BookCopy)
+**Pronto quando:** um livro com 3 exemplares mostra "3 de 3 disponíveis".
 
-Objetivo: cada livro tem exemplares físicos com código e status.
+## Leva 4 — Contas e login
+Objetivo: usuário se cadastra, entra e sai; só o bibliotecário altera o acervo.
+- [ ] DTOs `RegisterUserDto` e `LoginDto`
+- [ ] `IAuthService` / `AuthService` com `PasswordHasher<User>` e e-mail salvo em minúsculas
+- [ ] Cookie auth no `Program.cs` (`AddAuthentication().AddCookie()` + `UseAuthentication()` antes de `UseAuthorization()`)
+- [ ] `AccountController`: Register, Login, Logout e AccessDenied
+- [ ] `[Authorize(Roles = "Librarian")]` em Create e Edit de livros e exemplares
+- [ ] Seed do primeiro bibliotecário, com a senha vinda dos User Secrets (nunca no código)
 
-- [ ] Adicionar exemplar a um livro (código único) a partir da tela de detalhes
-- [ ] Listar exemplares com status (`Available`, `Loaned`, `Lost`, `Inactive`)
-- [ ] Alterar status para `Lost` / `Inactive` (desativar em vez de apagar)
-- [ ] Mostrar na listagem de livros a contagem de exemplares disponíveis
+**Pronto quando:** um usuário comum vê o catálogo mas recebe "acesso negado" ao tentar cadastrar um livro.
 
-## Leva 4 — Autenticação e papéis
+## Leva 5 — Empréstimos e devoluções
+Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
+- [ ] DTOs `CreateLoanDto` e `LoanResponseDto`
+- [ ] `ILoanService` / `LoanService`, com as regras abaixo:
+  - só empresta exemplar `Available`
+  - máximo de 3 empréstimos abertos por usuário
+  - bloqueia quem tem empréstimo atrasado
+  - prazo de 14 dias (`DueDate = hoje + 14`)
+  - empréstimo e mudança de status do exemplar na mesma transação
+  - devolução preenche `ReturnedAt` e volta o exemplar para `Available`, e devolver duas vezes é erro
+- [ ] Limites (3 e 14) no `appsettings.json`, seção `LoanRules`
+- [ ] `LoansController`: "Meus empréstimos" (User) e Emprestar, Devolver e Atrasados (Librarian)
+- [ ] Tratar a violação do índice `IX_Loans_BookCopyId_Open` como "exemplar já emprestado"
 
-Objetivo: usuários se cadastram e entram; só bibliotecários gerenciam o acervo.
+**Pronto quando:** dá para emprestar, ver o atraso e devolver, e as regras barram os casos inválidos.
 
-- [ ] DTOs: `RegisterUserDto`, `LoginDto`, `ResetPasswordDto`
-- [ ] `IAuthService` / `AuthService` com `PasswordHasher<User>` (nunca salvar senha em texto)
-- [ ] Autenticação por cookie no `Program.cs`: `AddAuthentication().AddCookie(...)` e `app.UseAuthentication()` antes de `UseAuthorization()`
-- [ ] Claims: `NameIdentifier`, `Name`, `Email`, `Role`
-- [ ] `AccountController`: `Register`, `Login`, `Logout`, `AccessDenied`
-- [ ] `[Authorize(Roles = "Librarian")]` nas ações de criação/edição/remoção de livros e exemplares
-- [ ] Seed de um bibliotecário inicial (credenciais em User Secrets, não no repositório)
+## Leva 6 — Testes
+- [ ] Projeto `Library.Tests` (xUnit)
+- [ ] Testes do `LoanService` com PostgreSQL real (Testcontainers) ou um banco de teste
+- [ ] Casos: limite de 3, atraso bloqueia, exemplar já emprestado, devolução dupla
 
-## Leva 5 — Empréstimos
+## Leva 7 — Reset de senha
+- [ ] `ResetPasswordDto` + token com expiração (tabela `PasswordResetTokens` ou Data Protection)
+- [ ] Envio de e-mail via serviço externo (`EmailApiKey` nos User Secrets / Key Vault)
 
-Objetivo: emprestar e devolver exemplares respeitando as regras de negócio.
+## Leva 8 — Azure
+- [ ] Key Vault no `Program.cs` fora de Development (`Azure.Extensions.AspNetCore.Configuration.Secrets` + `Azure.Identity`)
+- [ ] App Service com Managed Identity + PostgreSQL Flexible Server
+- [ ] Migrations via `dotnet ef migrations script --idempotent` no pipeline
+- [ ] README de produção atualizado (sem senha nas App Settings)
 
-- [ ] DTOs: `CreateLoanDto`, `LoanResponseDto`
-- [ ] `ILoanService` / `LoanService`:
-  - [ ] Emprestar só exemplar `Available`; mudar para `Loaned` na mesma transação
-  - [ ] `DueDate` padrão (ex.: 14 dias) e validação `DueDate >= data do empréstimo`
-  - [ ] Devolver: preencher `ReturnedAt` e voltar o exemplar para `Available`
-  - [ ] Tratar violação do índice `IX_Loans_BookCopyId_Open` (dois empréstimos abertos)
-- [ ] `LoansController` e views: empréstimos em aberto, atrasados, histórico
-- [ ] Usuário comum vê só os próprios empréstimos; bibliotecário vê todos
+---
 
-## Leva 6 — Qualidade e acabamento
-
-- [ ] Projeto de testes (xUnit) para `BookService` e `LoanService` (regras de empréstimo/devolução)
-- [ ] Paginação e busca por título/autor/ISBN na listagem de livros
-- [ ] Mensagens de feedback (`TempData`) após criar/editar/excluir
-- [ ] Atualizar o `README.md` (subir o Postgres com Docker, aplicar migrations, criar o bibliotecário)
-- [ ] `docker-compose.yml` com o Postgres (opcional)
+## Regras para todas as levas
+- Nunca editar `Migrations/` à mão: mudar model/configuration e rodar `dotnet ef migrations add NomeDaMudanca`.
+- Controllers finos: regra de negócio fica nos services.
+- Cada leva termina com `dotnet build` limpo e um commit `leva N: descrição`.
