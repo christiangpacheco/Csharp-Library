@@ -21,6 +21,7 @@ obj/
 # Local environment and secret files
 .env
 .env.*
+!.env.example
 secrets.json
 
 # OS files
