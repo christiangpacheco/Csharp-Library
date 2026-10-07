@@ -17,6 +17,7 @@ Objetivo: abrir `/` sem erro e ter um layout comum.
 - [ ] `Views/_ViewStart.cshtml`, `Views/_ViewImports.cshtml`, `Views/Shared/_Layout.cshtml` (Bootstrap via CDN, menu Livros / Empréstimos / Entrar)
 - [ ] `HomeController` com a action `Error` e a view `Views/Shared/Error.cshtml`, que o `Program.cs` já referencia
 - [ ] Corrigir `BooksController`: `return View(books)` em vez de `/Views/Account/Books/...`
+- [ ] `docker-compose.yml` com o PostgreSQL (porta 5433, volume `library-data`)
 - [ ] Atualizar o README (4 tabelas, porta 5433, Docker)
 
 **Pronto quando:** `dotnet run` abre a lista de livros com o layout.
@@ -28,6 +29,7 @@ Objetivo: cadastrar e editar livros de verdade no banco.
 - [ ] Registrar no `Program.cs` com `AddScoped<IBookService, BookService>()`
 - [ ] `BooksController`: Index, Details, Create, Edit (GET/POST) com views
 - [ ] ISBN duplicado vira mensagem de validação, não erro 500
+- [ ] Busca por título/autor/ISBN e paginação na Index
 
 **Pronto quando:** dá para cadastrar, editar e ver livros, e eles continuam lá depois de reiniciar a aplicação.
 
