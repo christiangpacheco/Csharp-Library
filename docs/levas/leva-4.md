@@ -1,6 +1,6 @@
 # Leva 4 — Contas e login ✅
 
-**Concluída em:** 2026-10-10 · **Branch:** `leva-4` (PR para `main`)
+**Concluída em:** 2026-10-10 · **Commit:** `5bcfe9b` · **Merge no `main`:** `ccfd160`
 
 ## O que foi feito
 - `DTOs/Account/RegisterUserDto.cs` (nome, e-mail, senha de 8 a 100 caracteres, confirmação) e `DTOs/Account/LoginDto.cs` (e-mail, senha, `ReturnUrl`).
