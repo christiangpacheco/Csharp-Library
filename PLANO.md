@@ -43,14 +43,14 @@ Objetivo: cada livro mostra seus exemplares e quantos estão disponíveis.
 
 **Pronto quando:** um livro com 3 exemplares mostra "3 de 3 disponíveis".
 
-## Leva 4 — Contas e login
+## Leva 4 — Contas e login ✅
 Objetivo: usuário se cadastra, entra e sai; só o bibliotecário altera o acervo.
-- [ ] DTOs `RegisterUserDto` e `LoginDto`
-- [ ] `IAuthService` / `AuthService` com `PasswordHasher<User>` e e-mail salvo em minúsculas
-- [ ] Cookie auth no `Program.cs` (`AddAuthentication().AddCookie()` + `UseAuthentication()` antes de `UseAuthorization()`)
-- [ ] `AccountController`: Register, Login, Logout e AccessDenied
-- [ ] `[Authorize(Roles = "Librarian")]` em Create e Edit de livros e exemplares
-- [ ] Seed do primeiro bibliotecário, com a senha vinda dos User Secrets (nunca no código)
+- [x] DTOs `RegisterUserDto` e `LoginDto`
+- [x] `IAuthService` / `AuthService` com `PasswordHasher<User>` e e-mail salvo em minúsculas
+- [x] Cookie auth no `Program.cs` (`AddAuthentication().AddCookie()` + `UseAuthentication()` antes de `UseAuthorization()`)
+- [x] `AccountController`: Register, Login, Logout e AccessDenied
+- [x] `[Authorize(Roles = "Librarian")]` em Create e Edit de livros e exemplares
+- [x] Seed do primeiro bibliotecário, com a senha vinda dos User Secrets (nunca no código)
 
 **Pronto quando:** um usuário comum vê o catálogo mas recebe "acesso negado" ao tentar cadastrar um livro.
 

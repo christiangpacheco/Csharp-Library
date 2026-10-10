@@ -1,0 +1,30 @@
+@model Library.DTOs.Account.LoginDto
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<h1 class="mb-4">Entrar</h1>
+
+<form asp-action="Login" method="post" class="col-md-6 col-lg-4">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" autocomplete="username" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Entrar</button>
+    <a asp-action="Register" class="btn btn-link">Criar conta</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

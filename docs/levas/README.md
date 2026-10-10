@@ -8,4 +8,5 @@ Um arquivo por leva concluída, com o que foi feito, decisões, pendências e o 
 | 1 — Esqueleto do site | ✅ concluída | [leva-1.md](leva-1.md) |
 | 2 — Catálogo de livros (CRUD) | ✅ concluída | [leva-2.md](leva-2.md) |
 | 3 — Exemplares | ✅ concluída | [leva-3.md](leva-3.md) |
-| 4 — Contas e login | ⏳ próxima | — |
+| 4 — Contas e login | ✅ concluída | [leva-4.md](leva-4.md) |
+| 5 — Empréstimos e devoluções | ⏳ próxima | — |

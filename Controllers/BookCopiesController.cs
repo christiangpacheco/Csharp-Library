@@ -1,11 +1,14 @@
 using Library.DTOs.BookCopies;
 using Library.Services;
+using Library.Models;
 using Library.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Controllers;
 
 // Exemplares são sempre vistos e editados dentro de um livro: toda ação volta para Books/Details.
+[Authorize(Roles = nameof(UserRole.Librarian))]
 public class BookCopiesController : Controller
 {
     private readonly IBookCopyService _copyService;

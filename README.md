@@ -81,6 +81,18 @@ Cadastre a connection string:
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5433;Database=library;Username=admin;Password=SUA_SENHA"
 ```
 
+### Primeiro bibliotecario
+
+O cadastro publico (`/Account/Register`) cria sempre um usuario comum. O primeiro bibliotecario e criado na inicializacao do app a partir da secao `SeedLibrarian`. Defina nos User Secrets (nunca no codigo nem no `appsettings.json`):
+
+```bash
+dotnet user-secrets set "SeedLibrarian:Name" "Seu Nome"
+dotnet user-secrets set "SeedLibrarian:Email" "voce@exemplo.com"
+dotnet user-secrets set "SeedLibrarian:Password" "UMA_SENHA_FORTE"
+```
+
+Na proxima execucao do `dotnet run` a conta e criada (se o e-mail ainda nao existir). Depois disso, entre em `/Account/Login` com esse e-mail.
+
 Para conferir se a chave foi cadastrada:
 
 ```bash

@@ -1,11 +1,15 @@
 @model BookIndexViewModel
 @{
     ViewData["Title"] = "Livros";
+    var isLibrarian = User.IsInRole(nameof(UserRole.Librarian));
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="mb-0">Livros</h1>
-    <a asp-action="Create" class="btn btn-primary">Novo livro</a>
+    @if (isLibrarian)
+    {
+        <a asp-action="Create" class="btn btn-primary">Novo livro</a>
+    }
 </div>
 
 <form asp-action="Index" method="get" class="row g-2 mb-4" role="search">
@@ -13,12 +17,15 @@
         <input type="search" name="search" value="@Model.Search" class="form-control"
                placeholder="Buscar por título, autor ou ISBN" aria-label="Buscar" />
     </div>
+    @if (isLibrarian)
+    {
     <div class="col-auto d-flex align-items-center">
         <div class="form-check mb-0">
             <input class="form-check-input" type="checkbox" name="inactive" value="true" id="inactive" checked="@Model.IncludeInactive" />
             <label class="form-check-label" for="inactive">Mostrar inativos</label>
         </div>
     </div>
+    }
     <div class="col-auto">
         <button type="submit" class="btn btn-outline-primary">Buscar</button>
         @if (!string.IsNullOrEmpty(Model.Search) || Model.IncludeInactive)

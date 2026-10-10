@@ -1,6 +1,8 @@
 using Library.DTOs.Books;
 using Library.Services;
+using Library.Models;
 using Library.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Controllers;
@@ -18,21 +20,30 @@ public class BooksController : Controller
 
     public async Task<IActionResult> Index(string? search, bool inactive = false, int page = 1)
     {
-        var model = await _bookService.SearchAsync(search, inactive, page, PageSize);
+        // Livros inativos só aparecem para o bibliotecário.
+        var includeInactive = inactive && User.IsInRole(nameof(UserRole.Librarian));
+        var model = await _bookService.SearchAsync(search, includeInactive, page, PageSize);
         return View(model);
     }
 
     public async Task<IActionResult> Details(int id)
     {
         var book = await _bookService.GetByIdAsync(id);
-        return book is null ? NotFound() : View(book);
+        if (book is null || (!book.IsActive && !User.IsInRole(nameof(UserRole.Librarian))))
+        {
+            return NotFound();
+        }
+
+        return View(book);
     }
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     public IActionResult Create()
     {
         return View(new CreateBookDto());
     }
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateBookDto dto)
@@ -53,6 +64,7 @@ public class BooksController : Controller
         return RedirectToAction(nameof(Details), new { id = result.Id });
     }
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     public async Task<IActionResult> Edit(int id)
     {
         var book = await _bookService.GetByIdAsync(id);
@@ -71,6 +83,7 @@ public class BooksController : Controller
         });
     }
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, UpdateBookDto dto)
@@ -96,20 +109,24 @@ public class BooksController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Deactivate(int id) => SetActive(id, false, "Livro desativado.");
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Reactivate(int id) => SetActive(id, true, "Livro reativado.");
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     public async Task<IActionResult> Delete(int id)
     {
         var book = await _bookService.GetByIdAsync(id);
         return book is null ? NotFound() : View(book);
     }
 
+    [Authorize(Roles = nameof(UserRole.Librarian))]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
