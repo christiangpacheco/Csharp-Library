@@ -2,7 +2,7 @@ namespace Library.Models;
 
 public class BookIndexViewModel
 {
-    public IReadOnlyList<Book> Books { get; init; } = [];
+    public IReadOnlyList<BookListItem> Books { get; init; } = [];
 
     public string? Search { get; init; }
 
@@ -13,4 +13,14 @@ public class BookIndexViewModel
     public int TotalPages { get; init; }
 
     public int TotalCount { get; init; }
+}
+
+// Linha da lista de livros com a contagem de exemplares disponíveis ("X de Y").
+public class BookListItem
+{
+    public Book Book { get; init; } = null!;
+
+    public int AvailableCopies { get; init; }
+
+    public int TotalCopies { get; init; }
 }

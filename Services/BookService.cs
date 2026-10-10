@@ -45,11 +45,18 @@ public class BookService : IBookService
         var totalPages = Math.Max(1, (int)Math.Ceiling(totalCount / (double)pageSize));
         page = Math.Clamp(page, 1, totalPages);
 
+        // As contagens de exemplares respeitam o filtro global (DeletedAt == null): só contam os não excluídos.
         var books = await query
             .OrderBy(b => b.Title)
             .ThenBy(b => b.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Select(b => new BookListItem
+            {
+                Book = b,
+                TotalCopies = b.Copies.Count,
+                AvailableCopies = b.Copies.Count(c => c.IsActive && c.Status == BookCopyStatus.Available)
+            })
             .ToListAsync();
 
         return new BookIndexViewModel
