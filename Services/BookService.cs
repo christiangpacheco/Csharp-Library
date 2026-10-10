@@ -30,7 +30,9 @@ public class BookService : IBookService
         search = search?.Trim();
         if (!string.IsNullOrEmpty(search))
         {
-            var pattern = $"%{search}%";
+            // Escapa curingas do LIKE para que % e _ sejam buscados como texto literal.
+            var escaped = search.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
+            var pattern = $"%{escaped}%";
             var isbn = NormalizeIsbn(search);
 
             query = query.Where(b =>

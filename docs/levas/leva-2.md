@@ -34,6 +34,16 @@ Feita contra um PostgreSQL 16 com as migrations `InitialCreate` e `AddActiveAndS
 - Livro ativo não é excluído; desativar tira da lista, "Mostrar inativos" traz de volta com selo, reativar funciona.
 - Excluir livro inativo preenche `DeletedAt` (a linha continua no banco), os detalhes passam a dar 404 e o ISBN pode ser recadastrado. Livro inativo com exemplar não é excluído.
 - No banco: 4 colunas `DeletedAt`, 3 colunas `IsActive` com default `true`, CHECK de status sem `Inactive`, livros antigos ficaram ativos.
+
+## Revisão e teste de segurança
+Dois agentes revisaram o PR antes do merge:
+- **Estrutura e lógica:** sem bloqueante. Apliquei três ajustes de robustez: o soft delete agora grava só `DeletedAt` (não regrava as outras colunas lidas no `FindAsync`); a busca escapa os curingas `%` e `_` do `ILIKE` (antes, buscar `_` trazia tudo); e o `foreach` do `SaveChanges` percorre uma cópia (`ToList()`).
+- **SQL injection (caixa-preta, sem contexto):** nenhum indício. Aspas, `;`, `--`, `/* */`, nomes de tabela e `OR 1=1`/`UNION` foram gravados literais no cadastro e tratados como texto na busca; nenhum erro 500, nenhum dado afetado. Consistente com consultas parametrizadas (EF Core).
+
+**Observações para as próximas levas:**
+- A migration `AddActiveAndSoftDelete` recria o CHECK de `BookCopyStatus` sem `Inactive` e supõe que não exista exemplar com `Status='Inactive'` (verdadeiro agora: a Leva 3 ainda não começou e não há exemplares). Num banco que já tivesse esse valor, o `database update` falharia no CHECK.
+- O soft delete também atualiza o `UpdatedAt` de Books e Users.
+- Filtros globais em principais de navegações obrigatórias (`Loan.BookCopy`, `Loan.User`) viram INNER JOIN: nas telas de histórico da Leva 5, usar `IgnoreQueryFilters()` para não esconder o registro de um item excluído.
 - Busca por "CLEAN", por "ana souza" e por "978-0-13" acha os livros certos; com 12 resultados, a página 1 mostra 10, a página 2 mostra 2, e os links mantêm o filtro.
 - `/Books/Details/999` e `/Books/Edit/999` dão 404; POST sem token antiforgery dá 400.
 

@@ -40,12 +40,15 @@ public class LibraryDbContext : DbContext
     {
         var now = DateTime.UtcNow;
 
-        foreach (var entry in ChangeTracker.Entries())
+        // ToList(): mudar o State de uma entrada altera a coleção que o foreach percorre.
+        foreach (var entry in ChangeTracker.Entries().ToList())
         {
-            if (entry.State == EntityState.Deleted && entry.Entity is ISoftDeletable softDeletable)
+            if (entry.State == EntityState.Deleted && entry.Entity is ISoftDeletable)
             {
-                entry.State = EntityState.Modified;
-                softDeletable.DeletedAt = now;
+                // Grava só DeletedAt (e UpdatedAt abaixo), sem regravar as outras colunas lidas no FindAsync.
+                entry.State = EntityState.Unchanged;
+                entry.Property(nameof(ISoftDeletable.DeletedAt)).CurrentValue = now;
+                entry.Property(nameof(ISoftDeletable.DeletedAt)).IsModified = true;
             }
 
             if (entry.State is EntityState.Added or EntityState.Modified
