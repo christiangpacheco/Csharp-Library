@@ -4,6 +4,15 @@
     ViewData["Title"] = Model.Title;
 
     var copies = Model.Copies.OrderBy(c => c.Code).ToList();
+    var isLibrarian = User.IsInRole(nameof(UserRole.Librarian));
+
+    // Leitores veem só os exemplares ativos; o bibliotecário vê todos para poder gerenciá-los.
+    if (!isLibrarian)
+    {
+        copies = copies.Where(c => c.IsActive).ToList();
+    }
+
+    // Contado depois do filtro para o "X de Y" bater com a tabela que cada perfil vê.
     var total = copies.Count;
     var available = copies.Count(c => c.IsActive && c.Status == BookCopyStatus.Available);
 }
@@ -44,8 +53,10 @@
 </dl>
 
 <div class="d-flex flex-wrap gap-2 mb-5">
+    @if (isLibrarian)
+    {
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-    @if (Model.IsActive)
+    if (Model.IsActive)
     {
         <form asp-action="Deactivate" asp-route-id="@Model.Id" method="post">
             <button type="submit" class="btn btn-outline-warning">Desativar</button>
@@ -58,15 +69,16 @@
         </form>
         <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Excluir</a>
     }
+    }
     <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
 </div>
 
 <section>
     <h2 class="h4 mb-3">Exemplares</h2>
 
-    @if (total == 0)
+    @if (copies.Count == 0)
     {
-        <p class="text-muted">Nenhum exemplar cadastrado. Adicione o primeiro abaixo.</p>
+        <p class="text-muted">Nenhum exemplar cadastrado.@(isLibrarian ? " Adicione o primeiro abaixo." : "")</p>
     }
     else
     {
@@ -75,7 +87,10 @@
                 <tr>
                     <th>Código</th>
                     <th>Status</th>
-                    <th class="text-end">Ações</th>
+                    @if (isLibrarian)
+                    {
+                        <th class="text-end">Ações</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +116,8 @@
                                 <span class="badge text-bg-secondary ms-1">Inativo</span>
                             }
                         </td>
+                        @if (isLibrarian)
+                        {
                         <td class="text-end">
                             <div class="d-inline-flex flex-wrap gap-1 justify-content-end">
                                 @if (copy.Status != BookCopyStatus.Loaned)
@@ -146,12 +163,15 @@
                                 }
                             </div>
                         </td>
+                        }
                     </tr>
                 }
             </tbody>
         </table>
     }
 
+    @if (isLibrarian)
+    {
     <form asp-controller="BookCopies" asp-action="Create" method="post" class="row g-2 col-lg-8 mt-2">
         <input type="hidden" name="BookId" value="@Model.Id" />
         <div class="col-sm-8">
@@ -163,4 +183,5 @@
             <button type="submit" class="btn btn-primary">Adicionar exemplar</button>
         </div>
     </form>
+    }
 </section>
