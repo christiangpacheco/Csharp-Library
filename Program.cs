@@ -11,6 +11,7 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookCopyService, BookCopyService>();
 
 var app = builder.Build();
 

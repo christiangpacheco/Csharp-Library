@@ -43,11 +43,13 @@ else
                 <th>Autor</th>
                 <th>ISBN</th>
                 <th>Publicação</th>
+                <th>Disponíveis</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var book in Model.Books)
+            @foreach (var item in Model.Books)
             {
+                var book = item.Book;
                 <tr>
                     <td>
                         <a asp-action="Details" asp-route-id="@book.Id">@book.Title</a>
@@ -59,6 +61,16 @@ else
                     <td>@book.Author</td>
                     <td>@book.ISBN</td>
                     <td>@book.PublishedAt.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (item.TotalCopies == 0)
+                        {
+                            <span class="text-muted">Sem exemplares</span>
+                        }
+                        else
+                        {
+                            <span>@item.AvailableCopies de @item.TotalCopies</span>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
