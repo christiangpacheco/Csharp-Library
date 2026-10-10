@@ -5,13 +5,20 @@ Aplicacao web para gerenciamento de livros, desenvolvida com ASP.NET Core MVC, .
 ## Início rápido
 
 - **URL do app (desenvolvimento):** http://localhost:5080 (ou https://localhost:7080). A rota inicial abre em `/Books`.
-- **Container Docker a deixar ligado:** `library-db` (PostgreSQL 17, porta 5433). Ligue com `docker start library-db` antes de rodar o app.
+- **Container Docker a deixar ligado:** `library-db` (PostgreSQL 17, porta 5433). Ligue-o antes de rodar o app.
+
+Na pasta do projeto, rode em ordem:
 
 ```bash
-docker start library-db     # banco
-dotnet ef database update    # aplica migrations pendentes
-dotnet run                   # app em http://localhost:5080
+sudo docker start library-db   # banco (o Docker aqui exige sudo)
+git pull                       # traz a última versão do código
+dotnet ef database update      # aplica migrations pendentes
+dotnet run                     # sobe o app
 ```
+
+Espere aparecer `Now listening on: http://localhost:5080` e **deixe esse terminal aberto**: o site só existe enquanto o `dotnet run` estiver rodando. Para parar, use `Ctrl+C`.
+
+> Se o navegador mostrar "refused to connect" / "recusou a conexão", quase sempre é porque o app não está rodando — volte e rode `dotnet run` de novo.
 
 ## Requisitos
 
