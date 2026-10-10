@@ -40,11 +40,19 @@ namespace Library.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ISBN")
                         .IsRequired()
                         .HasMaxLength(13)
                         .HasColumnType("character varying(13)")
                         .IsFixedLength(false);
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<DateOnly>("PublishedAt")
                         .HasColumnType("date");
@@ -62,7 +70,8 @@ namespace Library.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ISBN")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.ToTable("Books", null, t =>
                         {
@@ -91,6 +100,14 @@ namespace Library.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -101,11 +118,12 @@ namespace Library.Migrations
                     b.HasIndex("BookId");
 
                     b.HasIndex("Code")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.ToTable("BookCopies", null, t =>
                         {
-                            t.HasCheckConstraint("CK_BookCopies_Status", "\"Status\" IN ('Available', 'Loaned', 'Lost', 'Inactive')");
+                            t.HasCheckConstraint("CK_BookCopies_Status", "\"Status\" IN ('Available', 'Loaned', 'Lost')");
                         });
                 });
 
@@ -125,6 +143,9 @@ namespace Library.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateOnly>("DueDate")
                         .HasColumnType("date");
 
@@ -142,7 +163,7 @@ namespace Library.Migrations
 
                     b.HasIndex(new[] { "BookCopyId" }, "IX_Loans_BookCopyId_Open")
                         .IsUnique()
-                        .HasFilter("\"ReturnedAt\" IS NULL");
+                        .HasFilter("\"ReturnedAt\" IS NULL AND \"DeletedAt\" IS NULL");
 
                     b.ToTable("Loans", null, t =>
                         {
@@ -165,10 +186,18 @@ namespace Library.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -193,7 +222,8 @@ namespace Library.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
 
                     b.ToTable("Users", null, t =>
                         {

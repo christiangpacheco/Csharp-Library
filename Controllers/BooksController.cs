@@ -16,9 +16,9 @@ public class BooksController : Controller
         _bookService = bookService;
     }
 
-    public async Task<IActionResult> Index(string? search, int page = 1)
+    public async Task<IActionResult> Index(string? search, bool inactive = false, int page = 1)
     {
-        var model = await _bookService.SearchAsync(search, page, PageSize);
+        var model = await _bookService.SearchAsync(search, inactive, page, PageSize);
         return View(model);
     }
 
@@ -96,6 +96,14 @@ public class BooksController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public Task<IActionResult> Deactivate(int id) => SetActive(id, false, "Livro desativado.");
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public Task<IActionResult> Reactivate(int id) => SetActive(id, true, "Livro reativado.");
+
     public async Task<IActionResult> Delete(int id)
     {
         var book = await _bookService.GetByIdAsync(id);
@@ -115,6 +123,18 @@ public class BooksController : Controller
 
         TempData["Success"] = "Livro excluído.";
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<IActionResult> SetActive(int id, bool isActive, string message)
+    {
+        var result = await _bookService.SetActiveAsync(id, isActive);
+        if (!result.Succeeded)
+        {
+            return NotFound();
+        }
+
+        TempData["Success"] = message;
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     private void AddError(ServiceResult result)

@@ -24,23 +24,30 @@ public class LibraryDbContext : DbContext
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
-        SetUpdatedAt();
+        ApplyAuditRules();
         return base.SaveChanges(acceptAllChangesOnSuccess);
     }
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        SetUpdatedAt();
+        ApplyAuditRules();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    // Users e Books têm UpdatedAt; o valor é preenchido aqui para não depender de cada service.
-    private void SetUpdatedAt()
+    // Soft delete: Remove() vira um UPDATE que preenche DeletedAt; o filtro global de cada configuration esconde o registro.
+    // Users e Books também têm UpdatedAt, preenchido aqui para não depender de cada service.
+    private void ApplyAuditRules()
     {
         var now = DateTime.UtcNow;
 
         foreach (var entry in ChangeTracker.Entries())
         {
+            if (entry.State == EntityState.Deleted && entry.Entity is ISoftDeletable softDeletable)
+            {
+                entry.State = EntityState.Modified;
+                softDeletable.DeletedAt = now;
+            }
+
             if (entry.State is EntityState.Added or EntityState.Modified
                 && entry.Metadata.FindProperty("UpdatedAt") is not null)
             {

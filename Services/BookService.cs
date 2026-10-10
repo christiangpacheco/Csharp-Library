@@ -18,9 +18,14 @@ public class BookService : IBookService
         _context = context;
     }
 
-    public async Task<BookIndexViewModel> SearchAsync(string? search, int page, int pageSize)
+    public async Task<BookIndexViewModel> SearchAsync(string? search, bool includeInactive, int page, int pageSize)
     {
         var query = _context.Books.AsNoTracking();
+
+        if (!includeInactive)
+        {
+            query = query.Where(b => b.IsActive);
+        }
 
         search = search?.Trim();
         if (!string.IsNullOrEmpty(search))
@@ -49,6 +54,7 @@ public class BookService : IBookService
         {
             Books = books,
             Search = search,
+            IncludeInactive = includeInactive,
             Page = page,
             TotalPages = totalPages,
             TotalCount = totalCount
@@ -116,6 +122,20 @@ public class BookService : IBookService
         return await SaveAsync(book);
     }
 
+    public async Task<ServiceResult> SetActiveAsync(int id, bool isActive)
+    {
+        var book = await _context.Books.FindAsync(id);
+        if (book is null)
+        {
+            return ServiceResult.Fail("Livro não encontrado.");
+        }
+
+        book.IsActive = isActive;
+        await _context.SaveChangesAsync();
+
+        return ServiceResult.Ok(id);
+    }
+
     public async Task<ServiceResult> DeleteAsync(int id)
     {
         var book = await _context.Books.FindAsync(id);
@@ -124,12 +144,18 @@ public class BookService : IBookService
             return ServiceResult.Fail("Livro não encontrado.");
         }
 
-        // A FK BookCopies → Books é Restrict: livro com exemplares não é apagado.
-        if (await _context.BookCopies.AnyAsync(c => c.BookId == id))
+        // Excluir é o último passo: o livro precisa estar desativado e sem exemplares.
+        if (book.IsActive)
         {
-            return ServiceResult.Fail("Este livro tem exemplares cadastrados e não pode ser excluído. Desative os exemplares.");
+            return ServiceResult.Fail("Desative o livro antes de excluí-lo.");
         }
 
+        if (await _context.BookCopies.AnyAsync(c => c.BookId == id))
+        {
+            return ServiceResult.Fail("Este livro tem exemplares cadastrados e não pode ser excluído. Exclua os exemplares antes.");
+        }
+
+        // Soft delete: o LibraryDbContext preenche DeletedAt em vez de apagar a linha.
         _context.Books.Remove(book);
         await _context.SaveChangesAsync();
 

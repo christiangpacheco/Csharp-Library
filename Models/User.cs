@@ -1,6 +1,6 @@
 namespace Library.Models;
 
-public class User
+public class User : ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -17,4 +17,8 @@ public class User
     public DateTime UpdatedAt { get; set; }
 
     public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+
+    public bool IsActive { get; set; } = true;
+
+    public DateTime? DeletedAt { get; set; }
 }
