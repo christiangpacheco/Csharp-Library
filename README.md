@@ -2,6 +2,17 @@
 
 Aplicacao web para gerenciamento de livros, desenvolvida com ASP.NET Core MVC, .NET 10, Entity Framework Core e PostgreSQL.
 
+## Início rápido
+
+- **URL do app (desenvolvimento):** http://localhost:5080 (ou https://localhost:7080). A rota inicial abre em `/Books`.
+- **Container Docker a deixar ligado:** `library-db` (PostgreSQL 17, porta 5433). Ligue com `docker start library-db` antes de rodar o app.
+
+```bash
+docker start library-db     # banco
+dotnet ef database update    # aplica migrations pendentes
+dotnet run                   # app em http://localhost:5080
+```
+
 ## Requisitos
 
 - SDK do .NET 10
