@@ -1,0 +1,29 @@
+@model CreateBookDto
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+<div class="mb-3">
+    <label asp-for="Title" class="form-label"></label>
+    <input asp-for="Title" class="form-control" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Author" class="form-label"></label>
+    <input asp-for="Author" class="form-control" />
+    <span asp-validation-for="Author" class="text-danger"></span>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 mb-3">
+        <label asp-for="ISBN" class="form-label"></label>
+        <input asp-for="ISBN" class="form-control" placeholder="9780132350884" />
+        <div class="form-text">13 dígitos. Hífens e espaços são ignorados.</div>
+        <span asp-validation-for="ISBN" class="text-danger"></span>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label asp-for="PublishedAt" class="form-label"></label>
+        <input asp-for="PublishedAt" type="date" class="form-control" />
+        <span asp-validation-for="PublishedAt" class="text-danger"></span>
+    </div>
+</div>

@@ -22,21 +22,23 @@ Objetivo: abrir `/` sem erro e ter um layout comum.
 
 **Pronto quando:** `dotnet run` abre a lista de livros com o layout.
 
-## Leva 2 — Catálogo de livros (CRUD)
+## Leva 2 — Catálogo de livros (CRUD) ✅
 Objetivo: cadastrar e editar livros de verdade no banco.
-- [ ] DTOs `CreateBookDto` e `UpdateBookDto` (renomear `UpdateBook.cs`), com `[Required]`, `[StringLength]` e ISBN de 13 dígitos
-- [ ] `IBookService` / `BookService` usando `LibraryDbContext` (listar, detalhar, criar, editar, desativar)
-- [ ] Registrar no `Program.cs` com `AddScoped<IBookService, BookService>()`
-- [ ] `BooksController`: Index, Details, Create, Edit (GET/POST) com views
-- [ ] ISBN duplicado vira mensagem de validação, não erro 500
-- [ ] Busca por título/autor/ISBN e paginação na Index
+- [x] DTOs `CreateBookDto` e `UpdateBookDto` (renomear `UpdateBook.cs`), com `[Required]`, `[StringLength]` e ISBN de 13 dígitos
+- [x] `IBookService` / `BookService` usando `LibraryDbContext` (listar, detalhar, criar, editar, desativar/reativar, excluir)
+- [x] Registrar no `Program.cs` com `AddScoped<IBookService, BookService>()`
+- [x] `BooksController`: Index, Details, Create, Edit (GET/POST) com views
+- [x] ISBN duplicado vira mensagem de validação, não erro 500
+- [x] Busca por título/autor/ISBN e paginação na Index
+
+- [x] Ativo/inativo (`IsActive`) e soft delete (`DeletedAt`) em todas as tabelas, migration `AddActiveAndSoftDelete`
 
 **Pronto quando:** dá para cadastrar, editar e ver livros, e eles continuam lá depois de reiniciar a aplicação.
 
 ## Leva 3 — Exemplares (BookCopies)
 Objetivo: cada livro mostra seus exemplares e quantos estão disponíveis.
 - [ ] Na página Details do livro: lista de exemplares (código e status) e formulário "Adicionar exemplar"
-- [ ] Mudar o status para `Lost` ou `Inactive` (nunca apagar)
+- [ ] Marcar exemplar como `Lost`; Desativar/Reativar (`IsActive`); excluir só exemplar inativo (soft delete)
 - [ ] Na Index: coluna "Disponíveis X de Y"
 
 **Pronto quando:** um livro com 3 exemplares mostra "3 de 3 disponíveis".
@@ -86,6 +88,7 @@ Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
 ---
 
 ## Regras para todas as levas
+- Nada é apagado do banco: toda tabela tem `DeletedAt` (soft delete, filtro global no `LibraryDbContext`). Users, Books e BookCopies também têm `IsActive`: desativar é uma ação própria, e só registro inativo pode ser excluído. Empréstimo tem só `DeletedAt` (o estado dele é aberto/devolvido). Índices únicos valem só para registros não excluídos. Toda entidade nova segue o mesmo padrão.
 - Nunca editar `Migrations/` à mão: mudar model/configuration e rodar `dotnet ef migrations add NomeDaMudanca`.
 - Controllers finos: regra de negócio fica nos services.
 - Cada leva termina com `dotnet build` limpo e um commit `leva N: descrição`.

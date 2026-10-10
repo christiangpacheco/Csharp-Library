@@ -16,6 +16,8 @@ public class LoanConfigurations : IEntityTypeConfiguration<Loan>
 
         builder.HasKey(l => l.Id);
 
+        builder.HasQueryFilter(l => l.DeletedAt == null);
+
         builder.Property(l => l.BorrowedAt).HasDefaultValueSql("now()");
 
         builder.Property(l => l.DueDate).HasColumnType("date");
@@ -38,6 +40,6 @@ public class LoanConfigurations : IEntityTypeConfiguration<Loan>
         // Um exemplar só pode ter um empréstimo em aberto por vez.
         builder.HasIndex(l => l.BookCopyId, "IX_Loans_BookCopyId_Open")
             .IsUnique()
-            .HasFilter("\"ReturnedAt\" IS NULL");
+            .HasFilter("\"ReturnedAt\" IS NULL AND \"DeletedAt\" IS NULL");
     }
 }

@@ -1,6 +1,6 @@
 namespace Library.Models;
 
-public class BookCopy
+public class BookCopy : ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -15,4 +15,8 @@ public class BookCopy
     public DateTime CreatedAt { get; set; }
 
     public ICollection<Loan> Loans { get; set; } = new List<Loan>();
+
+    public bool IsActive { get; set; } = true;
+
+    public DateTime? DeletedAt { get; set; }
 }

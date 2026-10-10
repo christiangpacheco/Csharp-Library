@@ -1,0 +1,28 @@
+@model Book
+@{
+    ViewData["Title"] = "Excluir livro";
+}
+
+<h1 class="mb-4">Excluir livro</h1>
+
+<div class="alert alert-warning col-lg-8">
+    Excluir <strong>@Model.Title</strong>, de @Model.Author (ISBN @Model.ISBN)? O livro sai do catálogo, mas o registro fica guardado no banco.
+</div>
+
+@if (Model.IsActive)
+{
+    <div class="alert alert-danger col-lg-8">
+        Desative o livro antes de excluí-lo.
+    </div>
+}
+@if (Model.Copies.Count > 0)
+{
+    <div class="alert alert-danger col-lg-8">
+        Este livro tem @Model.Copies.Count exemplar(es) e não pode ser excluído.
+    </div>
+}
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger" disabled="@(Model.IsActive || Model.Copies.Count > 0)">Excluir</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancelar</a>
+</form>

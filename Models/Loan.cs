@@ -1,6 +1,6 @@
 namespace Library.Models;
 
-public class Loan
+public class Loan : ISoftDeletable
 {
     public int Id { get; set; }
 
@@ -17,4 +17,6 @@ public class Loan
     public DateOnly DueDate { get; set; }
 
     public DateTime? ReturnedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 }

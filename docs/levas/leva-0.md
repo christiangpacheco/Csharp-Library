@@ -3,7 +3,7 @@
 **Concluída em:** 2026-10-07 · **Commit:** `3d1a9a7` (plano: `ca73759`, `6d276a8`)
 
 ## O que foi feito
-- Models: `User`, `Book`, `BookCopy`, `Loan` e enums `UserRole` (`User`, `Librarian`) e `BookCopyStatus` (`Available`, `Loaned`, `Lost`, `Inactive`).
+- Models: `User`, `Book`, `BookCopy`, `Loan` e enums `UserRole` (`User`, `Librarian`) e `BookCopyStatus` (`Available`, `Loaned`, `Lost`, `Inactive`). _Na Leva 2, `Inactive` foi substituído pelo campo `IsActive`._
 - `Loan` aponta para `BookCopy` (exemplar físico), não para `Book`. `Book.PublishedAt` e `Loan.DueDate` são `DateOnly` (coluna `date`).
 - Configurations em `Data/Configurations/` (aplicadas por `ApplyConfigurationsFromAssembly`):
   - Índices únicos: `Users.Email`, `Books.ISBN`, `BookCopies.Code`.
