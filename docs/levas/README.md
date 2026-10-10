@@ -6,4 +6,5 @@ Um arquivo por leva concluída, com o que foi feito, decisões, pendências e o 
 |---|---|---|
 | 0 — Base de dados | ✅ concluída | [leva-0.md](leva-0.md) |
 | 1 — Esqueleto do site | ✅ concluída | [leva-1.md](leva-1.md) |
-| 2 — Catálogo de livros (CRUD) | ⏳ próxima | — |
+| 2 — Catálogo de livros (CRUD) | ✅ concluída | [leva-2.md](leva-2.md) |
+| 3 — Exemplares | ⏳ próxima | — |

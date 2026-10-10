@@ -22,14 +22,14 @@ Objetivo: abrir `/` sem erro e ter um layout comum.
 
 **Pronto quando:** `dotnet run` abre a lista de livros com o layout.
 
-## Leva 2 — Catálogo de livros (CRUD)
+## Leva 2 — Catálogo de livros (CRUD) ✅
 Objetivo: cadastrar e editar livros de verdade no banco.
-- [ ] DTOs `CreateBookDto` e `UpdateBookDto` (renomear `UpdateBook.cs`), com `[Required]`, `[StringLength]` e ISBN de 13 dígitos
-- [ ] `IBookService` / `BookService` usando `LibraryDbContext` (listar, detalhar, criar, editar, desativar)
-- [ ] Registrar no `Program.cs` com `AddScoped<IBookService, BookService>()`
-- [ ] `BooksController`: Index, Details, Create, Edit (GET/POST) com views
-- [ ] ISBN duplicado vira mensagem de validação, não erro 500
-- [ ] Busca por título/autor/ISBN e paginação na Index
+- [x] DTOs `CreateBookDto` e `UpdateBookDto` (renomear `UpdateBook.cs`), com `[Required]`, `[StringLength]` e ISBN de 13 dígitos
+- [x] `IBookService` / `BookService` usando `LibraryDbContext` (listar, detalhar, criar, editar, excluir sem exemplares)
+- [x] Registrar no `Program.cs` com `AddScoped<IBookService, BookService>()`
+- [x] `BooksController`: Index, Details, Create, Edit (GET/POST) com views
+- [x] ISBN duplicado vira mensagem de validação, não erro 500
+- [x] Busca por título/autor/ISBN e paginação na Index
 
 **Pronto quando:** dá para cadastrar, editar e ver livros, e eles continuam lá depois de reiniciar a aplicação.
 

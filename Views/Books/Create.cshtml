@@ -1,0 +1,17 @@
+@model CreateBookDto
+@{
+    ViewData["Title"] = "Novo livro";
+}
+
+<h1 class="mb-4">Novo livro</h1>
+
+<form asp-action="Create" method="post" class="col-lg-8">
+    <partial name="_BookForm" model="Model" />
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

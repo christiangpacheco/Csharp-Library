@@ -1,0 +1,25 @@
+@model Book
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h1 class="mb-1">@Model.Title</h1>
+<p class="text-muted mb-4">@Model.Author</p>
+
+<dl class="row col-lg-8">
+    <dt class="col-sm-4">ISBN</dt>
+    <dd class="col-sm-8">@Model.ISBN</dd>
+
+    <dt class="col-sm-4">Publicação</dt>
+    <dd class="col-sm-8">@Model.PublishedAt.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-4">Exemplares</dt>
+    <dd class="col-sm-8">@Model.Copies.Count</dd>
+
+    <dt class="col-sm-4">Cadastrado em</dt>
+    <dd class="col-sm-8">@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Excluir</a>
+<a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
