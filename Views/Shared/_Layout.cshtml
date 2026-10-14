@@ -20,9 +20,18 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Books" asp-action="Index">Livros</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Loans" asp-action="Index">Empréstimos</a>
-                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Loans" asp-action="Index">Meus empréstimos</a>
+                            </li>
+                        }
+                        @if (User.IsInRole(nameof(UserRole.Librarian)))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Loans" asp-action="Open">Empréstimos (gestão)</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav align-items-sm-center">
                         @if (User.Identity?.IsAuthenticated == true)

@@ -54,19 +54,20 @@ Objetivo: usuário se cadastra, entra e sai; só o bibliotecário altera o acerv
 
 **Pronto quando:** um usuário comum vê o catálogo mas recebe "acesso negado" ao tentar cadastrar um livro.
 
-## Leva 5 — Empréstimos e devoluções
+## Leva 5 — Empréstimos e devoluções ✅
 Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
-- [ ] DTOs `CreateLoanDto` e `LoanResponseDto`
-- [ ] `ILoanService` / `LoanService`, com as regras abaixo:
+- [x] DTOs `CreateLoanDto` e `LoanResponseDto`
+- [x] `ILoanService` / `LoanService`, com as regras abaixo:
   - só empresta exemplar `Available`
   - máximo de 3 empréstimos abertos por usuário
   - bloqueia quem tem empréstimo atrasado
   - prazo de 14 dias (`DueDate = hoje + 14`)
   - empréstimo e mudança de status do exemplar na mesma transação
   - devolução preenche `ReturnedAt` e volta o exemplar para `Available`, e devolver duas vezes é erro
-- [ ] Limites (3 e 14) no `appsettings.json`, seção `LoanRules`
-- [ ] `LoansController`: "Meus empréstimos" (User) e Emprestar, Devolver e Atrasados (Librarian)
-- [ ] Tratar a violação do índice `IX_Loans_BookCopyId_Open` como "exemplar já emprestado"
+- [x] Limites (3 e 14) no `appsettings.json`, seção `LoanRules`
+- [x] `LoansController`: "Meus empréstimos" (User) e Emprestar, Devolver e Atrasados (Librarian)
+- [x] Tratar a violação do índice `IX_Loans_BookCopyId_Open` como "exemplar já emprestado"
+- [x] Ajuste do "X de Y" para não contar exemplar inativo (pendência da Leva 4)
 
 **Pronto quando:** dá para emprestar, ver o atraso e devolver, e as regras barram os casos inválidos.
 

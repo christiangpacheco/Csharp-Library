@@ -120,6 +120,11 @@
                         {
                         <td class="text-end">
                             <div class="d-inline-flex flex-wrap gap-1 justify-content-end">
+                                @if (copy.IsActive && copy.Status == BookCopyStatus.Available)
+                                {
+                                    <a asp-controller="Loans" asp-action="Create" asp-route-bookCopyId="@copy.Id"
+                                       class="btn btn-sm btn-primary">Emprestar</a>
+                                }
                                 @if (copy.Status != BookCopyStatus.Loaned)
                                 {
                                     if (copy.Status == BookCopyStatus.Lost)
