@@ -54,7 +54,8 @@ public class BookService : IBookService
             .Select(b => new BookListItem
             {
                 Book = b,
-                TotalCopies = b.Copies.Count,
+                // "X de Y" conta só exemplares ativos (em circulação); inativos ficam de fora dos dois números.
+                TotalCopies = b.Copies.Count(c => c.IsActive),
                 AvailableCopies = b.Copies.Count(c => c.IsActive && c.Status == BookCopyStatus.Available)
             })
             .ToListAsync();

@@ -9,4 +9,5 @@ Um arquivo por leva concluída, com o que foi feito, decisões, pendências e o 
 | 2 — Catálogo de livros (CRUD) | ✅ concluída | [leva-2.md](leva-2.md) |
 | 3 — Exemplares | ✅ concluída | [leva-3.md](leva-3.md) |
 | 4 — Contas e login | ✅ concluída | [leva-4.md](leva-4.md) |
-| 5 — Empréstimos e devoluções | ⏳ próxima | — |
+| 5 — Empréstimos e devoluções | ✅ concluída | [leva-5.md](leva-5.md) |
+| 6 — Testes | ⏳ próxima | — |

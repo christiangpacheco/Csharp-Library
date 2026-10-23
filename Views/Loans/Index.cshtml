@@ -1,0 +1,50 @@
+@model IReadOnlyList<Library.DTOs.Loans.LoanResponseDto>
+@{
+    ViewData["Title"] = "Meus empréstimos";
+}
+
+<h1 class="mb-4">Meus empréstimos</h1>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Você não tem empréstimos.</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Livro</th>
+                <th>Exemplar</th>
+                <th>Emprestado em</th>
+                <th>Devolver até</th>
+                <th>Situação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@loan.BookId">@loan.BookTitle</a></td>
+                    <td>@loan.BookCopyCode</td>
+                    <td>@loan.BorrowedAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                    <td>@loan.DueDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @if (loan.IsReturned)
+                        {
+                            <span class="badge text-bg-success">Devolvido em @loan.ReturnedAt!.Value.ToLocalTime().ToString("dd/MM/yyyy")</span>
+                        }
+                        else if (loan.IsOverdue)
+                        {
+                            <span class="badge text-bg-danger">Atrasado</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-primary">Em aberto</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
