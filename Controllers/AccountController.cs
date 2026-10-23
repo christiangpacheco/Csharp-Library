@@ -12,10 +12,14 @@ namespace Library.Controllers;
 public class AccountController : Controller
 {
     private readonly IAuthService _authService;
+    private readonly IPasswordResetService _passwordResetService;
+    private readonly IEmailSender _emailSender;
 
-    public AccountController(IAuthService authService)
+    public AccountController(IAuthService authService, IPasswordResetService passwordResetService, IEmailSender emailSender)
     {
         _authService = authService;
+        _passwordResetService = passwordResetService;
+        _emailSender = emailSender;
     }
 
     [AllowAnonymous]
@@ -93,6 +97,69 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         TempData["Success"] = "Você saiu da sua conta.";
         return RedirectToAction("Index", "Books");
+    }
+
+    [AllowAnonymous]
+    public IActionResult ForgotPassword()
+    {
+        return View(new ForgotPasswordDto());
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(dto);
+        }
+
+        var token = await _passwordResetService.CreateTokenAsync(dto.Email);
+
+        // Só envia o e-mail quando existe conta ativa, mas a resposta é sempre a mesma:
+        // assim a tela não revela se o e-mail está cadastrado (anti-enumeração).
+        if (token is not null)
+        {
+            var link = Url.Action("ResetPassword", "Account", new { token }, Request.Scheme)!;
+            await _emailSender.SendPasswordResetAsync(dto.Email, link);
+        }
+
+        TempData["Success"] = "Se houver uma conta com esse e-mail, enviamos um link para redefinir a senha.";
+        return RedirectToAction(nameof(Login));
+    }
+
+    [AllowAnonymous]
+    public IActionResult ResetPassword(string? token = null)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            TempData["Error"] = "Link inválido ou expirado. Peça um novo.";
+            return RedirectToAction(nameof(ForgotPassword));
+        }
+
+        return View(new ResetPasswordDto { Token = token });
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(dto);
+        }
+
+        var result = await _passwordResetService.ResetAsync(dto);
+        if (!result.Succeeded)
+        {
+            ModelState.AddModelError(string.Empty, result.Error ?? "Não foi possível redefinir a senha.");
+            return View(dto);
+        }
+
+        TempData["Success"] = "Senha redefinida. Entre com a nova senha.";
+        return RedirectToAction(nameof(Login));
     }
 
     [AllowAnonymous]

@@ -14,12 +14,18 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.Configure<LoanRules>(builder.Configuration.GetSection("LoanRules"));
+builder.Services.Configure<PasswordResetOptions>(builder.Configuration.GetSection("PasswordReset"));
 
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBookCopyService, BookCopyService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+// Em desenvolvimento, o link de redefinição é só registrado no log. A implementação de produção
+// (serviço externo com EmailApiKey) entra junto do Key Vault na Leva 8.
+builder.Services.AddScoped<IEmailSender, LoggingEmailSender>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

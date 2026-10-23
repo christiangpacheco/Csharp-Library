@@ -76,9 +76,11 @@ Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
 - [ ] Testes do `LoanService` com PostgreSQL real (Testcontainers) ou um banco de teste
 - [ ] Casos: limite de 3, atraso bloqueia, exemplar já emprestado, devolução dupla
 
-## Leva 7 — Reset de senha
-- [ ] `ResetPasswordDto` + token com expiração (tabela `PasswordResetTokens` ou Data Protection)
-- [ ] Envio de e-mail via serviço externo (`EmailApiKey` nos User Secrets / Key Vault)
+## Leva 7 — Reset de senha ✅
+- [x] `ResetPasswordDto` + token com expiração (tabela `PasswordResetTokens`, token guardado como hash SHA-256, uso único)
+- [x] `IEmailSender` com o link de redefinição (no dev, o link vai para o log; remetente de produção com `EmailApiKey` fica para a Leva 8, junto do Key Vault)
+
+**Pronto quando:** dá para pedir "Esqueci minha senha", receber o link e redefinir; token inválido, expirado ou já usado é recusado. Relatório em `docs/levas/leva-7.md`.
 
 ## Leva 8 — Azure
 - [ ] Key Vault no `Program.cs` fora de Development (`Azure.Extensions.AspNetCore.Configuration.Secrets` + `Azure.Identity`)

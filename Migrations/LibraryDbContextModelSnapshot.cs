@@ -173,6 +173,53 @@ namespace Library.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Library.Models.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .IsFixedLength(false);
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique()
+                        .HasFilter("\"DeletedAt\" IS NULL");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTokens", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PasswordResetTokens_Expiry", "\"ExpiresAt\" > \"CreatedAt\"");
+
+                            t.HasCheckConstraint("CK_PasswordResetTokens_UsedAt", "\"UsedAt\" IS NULL OR \"UsedAt\" >= \"CreatedAt\"");
+                        });
+                });
+
             modelBuilder.Entity("Library.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -257,6 +304,17 @@ namespace Library.Migrations
                         .IsRequired();
 
                     b.Navigation("BookCopy");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Library.Models.PasswordResetToken", b =>
+                {
+                    b.HasOne("Library.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
