@@ -6,10 +6,10 @@ name: Deploy para Azure
 #   MIGRATIONS_CONNECTION                                    -> conexão usada só para aplicar migrations
 # O passo a passo de provisionamento está em docs/azure-deploy.md.
 
+# O projeto não é publicado: o workflow fica só como referência e roda apenas manualmente
+# (Actions > Deploy para Azure > Run workflow), nunca a cada push.
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 permissions:
   id-token: write   # necessário para o login OIDC no Azure

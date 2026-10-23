@@ -236,6 +236,8 @@ SELECT * FROM public."__EFMigrationsHistory";
 
 ## Configuracao de producao no Azure
 
+> **Este projeto nao e publicado.** A secao abaixo fica como referencia de como seria o deploy; o workflow `deploy.yml` so roda manualmente. Para testar, rode localmente (veja "Inicio rapido").
+
 Em producao **nenhuma senha fica nas App Settings**: os segredos moram no **Azure Key Vault** e o App Service os le por **Managed Identity**. A unica App Setting necessaria e o endereco do cofre:
 
 ```text

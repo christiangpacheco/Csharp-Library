@@ -2,6 +2,8 @@
 
 **Concluída em:** 2026-10-23 · **Branch:** `leva-8` (PR para `main`)
 
+> **Decisão (2026-10-23): o projeto não será publicado.** O provisionamento e o deploy no Azure não foram executados nem serão. O código e a documentação abaixo ficam como referência; o workflow `deploy.yml` passou a rodar só manualmente (`workflow_dispatch`), para não falhar a cada push no `main`. O app é testado localmente.
+
 Leva de infraestrutura e deploy. O que é código e documentação foi feito e validado na nuvem; o provisionamento em si depende da conta Azure do Christian (ver o fim).
 
 ## O que foi feito

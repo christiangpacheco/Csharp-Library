@@ -90,7 +90,9 @@ Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
 - [x] Migrations via `dotnet ef migrations script --idempotent` no pipeline (`.github/workflows/deploy.yml`)
 - [x] README de produção atualizado (sem senha nas App Settings — só `KeyVault__Uri`)
 
-**Pronto quando:** o código lê os segredos do Key Vault por Managed Identity e há guia + workflow para provisionar e publicar. Relatório em `docs/levas/leva-8.md`.
+**Pronto quando:** o código lê os segredos do Key Vault por Managed Identity e há guia + workflow para provisionar e publicar.
+
+> **Decisão (2026-10-23):** o projeto não será publicado no Azure. O código do Key Vault, o guia `docs/azure-deploy.md` e o workflow ficam como referência; o workflow roda só manualmente e o app é testado localmente (PostgreSQL e Mailpit em Docker). Relatório em `docs/levas/leva-8.md`.
 
 ---
 
