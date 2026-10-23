@@ -32,5 +32,8 @@ Leva de infraestrutura e deploy. O que é código e documentação foi feito e v
 - `IEmailSender` de produção (provedor + `EmailApiKey`) ainda por implementar.
 - O guia libera "Allow Azure services" no PostgreSQL por simplicidade; endurecer a rede (VNet/Private Endpoint) fica como melhoria.
 
+## Status do deploy
+Por decisão do Christian (2026-10-23), o provisionamento e o deploy no Azure **não foram executados nem testados** — o projeto roda localmente. O código e o guia ficam prontos para quando houver interesse. Por isso o workflow `deploy.yml` está só com disparo **manual** (`workflow_dispatch`); não roda em push no `main` (evita falhar e deixar o repositório vermelho sem os segredos do Azure).
+
 ## Fim do plano de levas
 Com a Leva 8, o `PLANO.md` está completo (Levas 0–8). Próximos passos ficam a critério do Christian (ex.: provedor de e-mail, endurecimento de rede, testes de integração adicionais).

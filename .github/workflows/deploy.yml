@@ -6,10 +6,11 @@ name: Deploy para Azure
 #   MIGRATIONS_CONNECTION                                    -> conexão usada só para aplicar migrations
 # O passo a passo de provisionamento está em docs/azure-deploy.md.
 
+# Só disparo manual (Actions > Deploy para Azure > Run workflow). Enquanto o Azure não estiver
+# provisionado e os secrets cadastrados, rodar em todo push no main só deixaria o repositório
+# vermelho. Para automatizar depois, reative "push: branches: [ main ]".
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
 
 permissions:
   id-token: write   # necessário para o login OIDC no Azure
