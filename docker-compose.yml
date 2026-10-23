@@ -12,5 +12,15 @@ services:
     volumes:
       - library-data:/var/lib/postgresql/data
 
+  # Caixa de e-mail falsa para desenvolvimento: captura tudo que o app envia por SMTP (porta 1025)
+  # e mostra numa página web em http://localhost:8025. Nada sai para a internet.
+  mailpit:
+    image: axllent/mailpit
+    container_name: library-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   library-data:
