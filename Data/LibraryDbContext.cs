@@ -17,6 +17,8 @@ public class LibraryDbContext : DbContext
 
     public DbSet<Loan> Loans => Set<Loan>();
 
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LibraryDbContext).Assembly);
