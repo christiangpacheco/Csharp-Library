@@ -71,10 +71,12 @@ Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
 
 **Pronto quando:** dá para emprestar, ver o atraso e devolver, e as regras barram os casos inválidos.
 
-## Leva 6 — Testes
-- [ ] Projeto `Library.Tests` (xUnit)
-- [ ] Testes do `LoanService` com PostgreSQL real (Testcontainers) ou um banco de teste
-- [ ] Casos: limite de 3, atraso bloqueia, exemplar já emprestado, devolução dupla
+## Leva 6 — Testes ✅
+- [x] Projeto `Library.Tests` (xUnit) + solução `Library.slnx`
+- [x] Testes do `LoanService` com PostgreSQL real (banco de teste dedicado `library_test` via `LIBRARY_TEST_DB`)
+- [x] Casos: limite de 3, atraso bloqueia, exemplar já emprestado (índice único), devolução dupla, prazo de 14 dias
+
+**Pronto quando:** `dotnet test` roda verde contra um PostgreSQL real. Relatório em `docs/levas/leva-6.md`.
 
 ## Leva 7 — Reset de senha ✅
 - [x] `ResetPasswordDto` + token com expiração (tabela `PasswordResetTokens`, token guardado como hash SHA-256, uso único)

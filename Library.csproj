@@ -7,6 +7,13 @@
 	  <UserSecretsId>f5a7250c-3aa4-432e-b50f-2fa53a204eed</UserSecretsId>
   </PropertyGroup>
 
+	<!-- O projeto de testes mora em tests/; o SDK Web inclui .cs recursivamente, então é preciso tirá-lo daqui. -->
+	<ItemGroup>
+	  <Compile Remove="tests/**/*.cs" />
+	  <Content Remove="tests/**" />
+	  <None Remove="tests/**" />
+	</ItemGroup>
+
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
