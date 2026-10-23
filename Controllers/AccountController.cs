@@ -14,12 +14,14 @@ public class AccountController : Controller
     private readonly IAuthService _authService;
     private readonly IPasswordResetService _passwordResetService;
     private readonly IEmailSender _emailSender;
+    private readonly ILogger<AccountController> _logger;
 
-    public AccountController(IAuthService authService, IPasswordResetService passwordResetService, IEmailSender emailSender)
+    public AccountController(IAuthService authService, IPasswordResetService passwordResetService, IEmailSender emailSender, ILogger<AccountController> logger)
     {
         _authService = authService;
         _passwordResetService = passwordResetService;
         _emailSender = emailSender;
+        _logger = logger;
     }
 
     [AllowAnonymous]
@@ -122,7 +124,15 @@ public class AccountController : Controller
         if (token is not null)
         {
             var link = Url.Action("ResetPassword", "Account", new { token }, Request.Scheme)!;
-            await _emailSender.SendPasswordResetAsync(dto.Email, link);
+            try
+            {
+                await _emailSender.SendPasswordResetAsync(dto.Email, link);
+            }
+            catch (Exception ex)
+            {
+                // Falha no envio não vira 500: um erro só para e-mails cadastrados revelaria quem tem conta.
+                _logger.LogError(ex, "Falha ao enviar o e-mail de redefinição de senha.");
+            }
         }
 
         TempData["Success"] = "Se houver uma conta com esse e-mail, enviamos um link para redefinir a senha.";

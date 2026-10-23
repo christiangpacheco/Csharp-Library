@@ -15,6 +15,11 @@ public class SmtpOptions
     // STARTTLS na porta 587. O Mailpit local não usa TLS, então em dev fica false.
     public bool UseStartTls { get; set; } = true;
 
+    // Checagem de revogação (CRL/OCSP) do certificado do servidor. Fica desligada por padrão porque
+    // intermediários do Let's Encrypt (usados pelo Brevo) não publicam mais CRL, e a conexão falharia
+    // mesmo com a cadeia válida. Nome do host, validade e cadeia continuam sendo verificados.
+    public bool CheckCertificateRevocation { get; set; }
+
     public string FromEmail { get; set; } = string.Empty;
 
     public string FromName { get; set; } = "Biblioteca";

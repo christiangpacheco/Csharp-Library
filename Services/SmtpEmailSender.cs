@@ -32,7 +32,7 @@ public class SmtpEmailSender : IEmailSender
             HtmlBody = $"<p>Recebemos um pedido para redefinir a sua senha.</p><p><a href=\"{encodedLink}\">Criar uma nova senha</a></p><p>Se não foi você, ignore este e-mail.</p>"
         }.ToMessageBody();
 
-        using var client = new SmtpClient();
+        using var client = new SmtpClient { CheckCertificateRevocation = _options.CheckCertificateRevocation };
         var security = _options.UseStartTls ? SecureSocketOptions.StartTls : SecureSocketOptions.None;
         await client.ConnectAsync(_options.Host!, _options.Port, security);
 
