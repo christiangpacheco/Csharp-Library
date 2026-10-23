@@ -1,0 +1,58 @@
+name: Deploy para Azure
+
+# Template de deploy. Para usar, preencha AZURE_WEBAPP_NAME abaixo e cadastre os secrets do
+# repositório (Settings > Secrets and variables > Actions):
+#   AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID  -> federação OIDC (sem senha)
+#   MIGRATIONS_CONNECTION                                    -> conexão usada só para aplicar migrations
+# O passo a passo de provisionamento está em docs/azure-deploy.md.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write   # necessário para o login OIDC no Azure
+  contents: read
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  AZURE_WEBAPP_NAME: ''   # <- nome do seu App Service
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar o .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publicar a aplicação
+        run: dotnet publish Library.csproj -c Release -o publish
+
+      - name: Gerar o script idempotente de migrations
+        run: |
+          dotnet tool install --global dotnet-ef --version 10.0.11
+          dotnet ef migrations script --idempotent --project Library.csproj -o migrate.sql
+
+      - name: Aplicar as migrations no PostgreSQL
+        # Usa uma conexão dedicada (secret), separada do acesso do app por Managed Identity.
+        # O runner precisa alcançar o Flexible Server (regra de firewall / "Allow Azure services").
+        run: psql "${{ secrets.MIGRATIONS_CONNECTION }}" -f migrate.sql
+
+      - name: Login no Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy para o App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: publish

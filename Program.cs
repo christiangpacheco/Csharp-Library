@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Library.Data;
 using Library.Services;
 using Library.Models;
@@ -7,6 +8,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Fora de Development, os segredos (connection string, senha do seed, EmailApiKey) vêm do Azure Key Vault,
+// acessado por Managed Identity (DefaultAzureCredential) — nenhuma senha fica nas App Settings.
+// O endereço do cofre vem da App Setting KeyVault:Uri. Nos nomes dos segredos, "--" vale por ":"
+// (ex.: o segredo "ConnectionStrings--DefaultConnection" vira a chave ConnectionStrings:DefaultConnection).
+if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultUri = builder.Configuration["KeyVault:Uri"];
+    if (!string.IsNullOrWhiteSpace(keyVaultUri))
+    {
+        builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUri), new DefaultAzureCredential());
+    }
+}
 
 builder.Services.AddControllersWithViews();
 

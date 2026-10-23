@@ -205,41 +205,31 @@ SELECT * FROM public."__EFMigrationsHistory";
 
 ## Configuracao de producao no Azure
 
-Em producao, nao use User Secrets. Configure a connection string no Azure App Service em:
+Em producao **nenhuma senha fica nas App Settings**: os segredos moram no **Azure Key Vault** e o App Service os le por **Managed Identity**. A unica App Setting necessaria e o endereco do cofre:
 
 ```text
-Configuration > Application settings
+KeyVault__Uri = https://SEU-COFRE.vault.azure.net/
 ```
 
-Crie a variavel:
+Fora do ambiente de Development, o `Program.cs` carrega o Key Vault com `DefaultAzureCredential` (a identidade gerenciada do App Service) e os segredos entram na configuracao. Nos nomes dos segredos, `--` vale pelos dois-pontos da configuracao. Crie no cofre, por exemplo:
 
-```text
-ConnectionStrings__DefaultConnection
-```
+| Segredo no Key Vault | Chave de configuracao | Conteudo |
+|---|---|---|
+| `ConnectionStrings--DefaultConnection` | `ConnectionStrings:DefaultConnection` | conexao do PostgreSQL do Azure (com `Ssl Mode=Require`) |
+| `SeedLibrarian--Email` | `SeedLibrarian:Email` | e-mail do primeiro bibliotecario |
+| `SeedLibrarian--Password` | `SeedLibrarian:Password` | senha do primeiro bibliotecario |
+| `SeedLibrarian--Name` | `SeedLibrarian:Name` | nome do primeiro bibliotecario |
 
-Com o valor do PostgreSQL do Azure, por exemplo:
-
-```text
-Host=servidor.postgres.database.azure.com;Port=5432;Database=library;Username=USUARIO;Password=SENHA;Ssl Mode=Require
-```
-
-O Azure usa dois sublinhados para representar os dois-pontos da configuracao:
-
-```text
-ConnectionStrings__DefaultConnection
-```
-
-equivale a:
-
-```text
-ConnectionStrings:DefaultConnection
-```
-
-Antes de executar a aplicacao em producao, aplique as migrations no banco do Azure usando uma connection string de producao configurada com seguranca:
+As migrations sao aplicadas pelo **script idempotente** no deploy (nao pelo app):
 
 ```bash
-dotnet ef database update
+dotnet ef migrations script --idempotent -o migrate.sql
+psql "$CONN_DE_PRODUCAO" -f migrate.sql
 ```
+
+O passo a passo completo (provisionar Key Vault, PostgreSQL Flexible Server, App Service com Managed Identity, atribuicao de acesso ao cofre e o pipeline) esta em [docs/azure-deploy.md](docs/azure-deploy.md). O workflow de deploy esta em [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
+
+> O envio de e-mail de redefinicao de senha em producao usa um provedor externo cuja chave (`EmailApiKey`) tambem vai no Key Vault; a implementacao concreta do `IEmailSender` de producao ainda precisa ser escolhida (hoje, em dev, o link so vai para o log).
 
 ## Estado atual
 

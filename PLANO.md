@@ -84,11 +84,13 @@ Objetivo: o fluxo principal da biblioteca, com as regras de negócio.
 
 **Pronto quando:** dá para pedir "Esqueci minha senha", receber o link e redefinir; token inválido, expirado ou já usado é recusado. Relatório em `docs/levas/leva-7.md`.
 
-## Leva 8 — Azure
-- [ ] Key Vault no `Program.cs` fora de Development (`Azure.Extensions.AspNetCore.Configuration.Secrets` + `Azure.Identity`)
-- [ ] App Service com Managed Identity + PostgreSQL Flexible Server
-- [ ] Migrations via `dotnet ef migrations script --idempotent` no pipeline
-- [ ] README de produção atualizado (sem senha nas App Settings)
+## Leva 8 — Azure ✅
+- [x] Key Vault no `Program.cs` fora de Development (`Azure.Extensions.AspNetCore.Configuration.Secrets` + `Azure.Identity`)
+- [x] App Service com Managed Identity + PostgreSQL Flexible Server (provisionamento scriptado em `docs/azure-deploy.md`; execução depende da conta Azure)
+- [x] Migrations via `dotnet ef migrations script --idempotent` no pipeline (`.github/workflows/deploy.yml`)
+- [x] README de produção atualizado (sem senha nas App Settings — só `KeyVault__Uri`)
+
+**Pronto quando:** o código lê os segredos do Key Vault por Managed Identity e há guia + workflow para provisionar e publicar. Relatório em `docs/levas/leva-8.md`.
 
 ---
 
