@@ -37,9 +37,17 @@ builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
-// Em desenvolvimento, o link de redefinição é só registrado no log. A implementação de produção
-// (serviço externo com EmailApiKey) entra junto do Key Vault na Leva 8.
-builder.Services.AddScoped<IEmailSender, LoggingEmailSender>();
+// E-mail: com a seção "Smtp" configurada (Mailpit em dev, Brevo/Gmail para envio real), envia por SMTP;
+// sem ela, o link de redefinição só é registrado no log.
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+if (!string.IsNullOrWhiteSpace(builder.Configuration["Smtp:Host"]))
+{
+    builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+}
+else
+{
+    builder.Services.AddScoped<IEmailSender, LoggingEmailSender>();
+}
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

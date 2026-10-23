@@ -101,6 +101,37 @@ dotnet user-secrets list
 
 Nao coloque a senha no `appsettings.json` ou no `appsettings.Development.json`.
 
+## E-mail (redefinicao de senha)
+
+O app envia e-mail por SMTP (MailKit), configurado na secao `Smtp`.
+
+### Em desenvolvimento: Mailpit
+
+O `appsettings.Development.json` ja aponta o SMTP para o Mailpit (`localhost:1025`, sem senha). O Mailpit e uma caixa de e-mail falsa: captura tudo que o app envia e mostra numa pagina web. Nada sai para a internet.
+
+```bash
+POSTGRES_PASSWORD=nao-usado docker compose up -d mailpit   # sobe so o Mailpit
+```
+
+Abra http://localhost:8025, peca "Esqueci a senha" no app e o e-mail com o link aparece la. (O `POSTGRES_PASSWORD` so e exigido porque o compose valida o arquivo inteiro; com um `.env` criado, basta `docker compose up -d mailpit`.)
+
+Sem a secao `Smtp` configurada, o app volta a so registrar o link no log.
+
+### Envio real (opcional): Brevo
+
+O plano gratuito do Brevo permite 300 e-mails por dia, sem cartao e sem prazo. Crie a conta, confirme o seu e-mail como remetente e gere uma chave SMTP. Depois, nos User Secrets (nunca no codigo):
+
+```bash
+dotnet user-secrets set "Smtp:Host" "smtp-relay.brevo.com"
+dotnet user-secrets set "Smtp:Port" "587"
+dotnet user-secrets set "Smtp:UseStartTls" "true"
+dotnet user-secrets set "Smtp:Username" "LOGIN_SMTP_DO_BREVO"
+dotnet user-secrets set "Smtp:Password" "CHAVE_SMTP_DO_BREVO"
+dotnet user-secrets set "Smtp:FromEmail" "remetente.verificado@exemplo.com"
+```
+
+Os User Secrets tem prioridade sobre o `appsettings.Development.json`, entao isso substitui o Mailpit.
+
 ## Restaurar dependencias
 
 ```bash

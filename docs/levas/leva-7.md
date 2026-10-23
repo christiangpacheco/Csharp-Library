@@ -36,7 +36,7 @@
 - Abrir `ResetPassword` sem token volta para "Esqueci minha senha".
 
 ## Pendências / observações
-- Falta o `IEmailSender` de produção (serviço externo + `EmailApiKey`); hoje o link sai no log em desenvolvimento.
+- ~~Falta o `IEmailSender` de produção~~ Resolvido depois (branch `email-smtp`): `SmtpEmailSender` com MailKit. Em dev o e-mail vai para o Mailpit (http://localhost:8025); para envio real, configurar o SMTP do Brevo nos User Secrets. Ver a seção "E-mail" do README.
 - Testes automatizados do `PasswordResetService` podem entrar quando o projeto de testes (Leva 6, PR #5) estiver no `main` — esta leva saiu a partir do `main`, sem o projeto de testes.
 - Herdado: usuário desativado depois de logar mantém acesso até o cookie expirar (8h).
 
